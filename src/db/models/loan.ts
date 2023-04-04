@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 export interface Loan {
   contractUrl: string;
@@ -18,6 +18,6 @@ const loanSchema = new mongoose.Schema({
 });
 
 const loanModel: mongoose.Model<LoanModelInterface> =
-  mongoose.model<LoanModelInterface>("offer", loanSchema);
+  mongoose.model<LoanModelInterface>("loan", loanSchema);
 
 export default loanModel;

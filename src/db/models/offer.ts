@@ -8,6 +8,7 @@ export interface Offer {
   duration: number;
   type: number;
   status: number;
+  createdBy: ObjectId;
 }
 
 export interface OfferModelInterface extends Offer, mongoose.Document {}
@@ -19,6 +20,7 @@ const offerSchema = new mongoose.Schema({
   duration: { type: Number, index: true },
   type: { type: Number, index: true },
   status: { type: Number, index: true },
+  createdBy: { type: ObjectId },
 });
 
 offerSchema.index({ token: 1, type: 1 });
