@@ -10,7 +10,6 @@ export default class OfferController {
       const offerParams = req.body;
       const offer = offerService.createOffer(offerParams as CreateOfferParams);
       return handleSuccess(offer, res);
-      return res.status(200).send(true);
     } catch (error) {
       return handleError(error as CustomError, res);
     }
