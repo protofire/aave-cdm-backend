@@ -1,12 +1,12 @@
 import { Router } from "express";
-import userService from "../services/user";
-import UserController from "../controllers/user";
+import UserController from "../controllers/userController";
 
 const user: Router = Router();
 const controller = new UserController();
 
-user.get("/request-string/:address", controller.generateRequestString);
+user.get("/authenticate/:address", controller.authenticate);
 
-user.post("/verify-ownership", controller.verifyOwnership);
+/** TESTING PURPOSES */
+user.post("/", controller.createUser);
 
 export default user;
