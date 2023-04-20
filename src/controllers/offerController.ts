@@ -8,9 +8,8 @@ export default class OfferController {
   public async createOffer(req: Request, res: Response): Promise<Response> {
     try {
       const offerParams = req.body;
-      console.log(offerParams);
-      // const offer = offerService.createOffer(offerParams as CreateOfferParams);
-      // return handleSuccess(offer, res);
+      const offer = offerService.createOffer(offerParams as CreateOfferParams);
+      return handleSuccess(offer, res);
       return res.status(200).send(true);
     } catch (error) {
       return handleError(error as CustomError, res);
