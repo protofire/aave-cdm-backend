@@ -8,8 +8,7 @@ export default class LoanController {
       const loans = await getUserLoans(address);
       return res.status(200).send(loans);
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({ message: "BAD_REQUEST" });
+      return res.status(500).send({ message: "INTERNAL_ERROR" });
     }
   }
 
@@ -22,7 +21,7 @@ export default class LoanController {
       const loansRequest = await getUserLoanRequest(address);
       return res.status(200).send({ loansRequest });
     } catch (error) {
-      return res.status(400).send({ message: "BAD_REQUEST" });
+      return res.status(500).send({ message: "INTERNAL_ERROR" });
     }
   }
 }
