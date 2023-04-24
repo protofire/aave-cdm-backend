@@ -68,4 +68,79 @@ type PolicyAdjstmentsAndMarket = {
   ];
 };
 
-export { Policy, PolicyAdjstmentsAndMarket, LoanRequest };
+type UserPayouts = {
+  payouts: [
+    {
+      id: string;
+      marketId: string;
+      recipient: string;
+      amount: string;
+      capitalToken: string;
+    }
+  ];
+  payoutRequests: [
+    {
+      id: string;
+      marketId: string;
+      recipient: string;
+      distributor: boolean;
+      requestedAmount: string;
+      status: number;
+      data: string | null;
+    }
+  ];
+};
+
+type Market = {
+  id: string;
+  marketId: string;
+  productId: string;
+  riskPoolsControllerAddress: string;
+  entityList: string;
+  isEnabled: string;
+  createdAt: string;
+  title: string;
+  marketFeeRecipient: string;
+  details: string;
+  wording: string;
+  author: string;
+  premiumToken: string;
+  capitalToken: string;
+  insuredToken: string;
+  latestAccruedTimestamp: string;
+  coverAdjusterOracle: string;
+  rateOracle: string;
+  waitingPeriod: string;
+  marketOperatorIncentiveFee: string;
+  policyBuyerAllowListId: string;
+  policyBuyerAllowanceListId: string;
+  status: string;
+  premiumMulAccumulator: string;
+  settlementDiscount: string;
+  desiredCover: string;
+  withdrawDelay: string;
+  headAggregatedPoolId: string;
+  tailCover: string;
+  maxPremiumRatePerSec: string;
+  bidStepPremiumRatePerSec: string;
+  maxAggregatedPoolSlots: string;
+};
+
+type LoanPayout = {
+  id: string;
+  marketId: string;
+  recipient: string;
+  amount: string;
+  data: string | null;
+  status: string;
+  token: string;
+};
+
+export {
+  Policy,
+  PolicyAdjstmentsAndMarket,
+  LoanRequest,
+  UserPayouts,
+  Market,
+  LoanPayout,
+};

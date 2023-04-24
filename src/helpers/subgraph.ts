@@ -1,7 +1,12 @@
 import { GraphQLClient } from "graphql-request";
 import dotenv from "dotenv";
 
-import { Policy, PolicyAdjstmentsAndMarket } from "../helpers/types";
+import {
+  Market,
+  Policy,
+  PolicyAdjstmentsAndMarket,
+  UserPayouts,
+} from "../helpers/types";
 
 dotenv.config();
 
@@ -61,7 +66,7 @@ const getUserPolicies = (address: string): Promise<{ policies: Policy[] }> => {
   return client.request(query);
 };
 
-const getPolicyAdjstmentsAndMarket = async (
+const getPolicyAdjstmentsAndMarket = (
   policyId: string,
   marketId: string
 ): Promise<PolicyAdjstmentsAndMarket> => {
@@ -93,4 +98,86 @@ const getPolicyAdjstmentsAndMarket = async (
   return client.request(query);
 };
 
-export { getPolicyAdjstmentsAndMarket, getUserPolicies };
+const getUserPayouts = (address: string): Promise<UserPayouts> => {
+  const query = `query {
+    payouts(where: {
+      recipient: "${address}"
+    })
+    {
+      id,
+      marketId,
+      recipient,
+      amount,
+      capitalToken,
+    }
+    payoutRequests(where: {
+      recipient: "${address}"
+    })
+    {
+      id,
+      marketId,
+      recipient,
+      distributor,
+      requestedAmount,
+      status,
+      data,
+    }
+  }`;
+
+  const client = initClient();
+  return client.request(query);
+};
+
+const getMarketById = (marketId: string): Promise<{ markets: Market[] }> => {
+  const query = `query {
+    markets(where: {
+      marketId: ${marketId}
+    })
+    {
+      id
+      marketId
+      productId
+      riskPoolsControllerAddress
+      entityList
+      isEnabled
+      createdAt
+      title
+      marketFeeRecipient
+      details
+      wording
+      author
+      premiumToken
+      capitalToken
+      insuredToken
+      latestAccruedTimestamp
+      coverAdjusterOracle
+      rateOracle
+      waitingPeriod
+      marketOperatorIncentiveFee
+      policyBuyerAllowListId
+      policyBuyerAllowanceListId
+      status
+      premiumMulAccumulator
+      settlementDiscount
+      desiredCover
+      withdrawDelay
+      headAggregatedPoolId
+      tailCover
+      maxPremiumRatePerSec
+      bidStepPremiumRatePerSec
+      maxAggregatedPoolSlots
+      tailKink
+      tailJumpPremiumRatePerSec
+    }
+  }`;
+
+  const client = initClient();
+  return client.request(query);
+};
+
+export {
+  getPolicyAdjstmentsAndMarket,
+  getUserPolicies,
+  getUserPayouts,
+  getMarketById,
+};

@@ -1,15 +1,11 @@
-import axios from "axios";
-import dotenv from "dotenv";
-import { LoanRequest, Policy } from "../helpers/types";
+import { LoanPayout, LoanRequest, Policy } from "../helpers/types";
 import {
+  getMarketById,
   getPolicyAdjstmentsAndMarket,
+  getUserPayouts,
   getUserPolicies,
 } from "../helpers/subgraph";
-
-dotenv.config();
-
-// const ATOMICA_URL = process.env.ATOMICA_URL || "";
-// const DEPLOYMENT_ID = process.env.DEPLOYMENT_ID || "";
+import { PayoutStatus } from "../helpers/constants";
 
 const getUserLoanRequest = async (address: string) => {
   const { policies } = await getUserPolicies(address);
@@ -19,7 +15,7 @@ const getUserLoanRequest = async (address: string) => {
     policies.map(async (policy: Policy) => {
       const { adjustmentConfigurations, markets } =
         await getPolicyAdjstmentsAndMarket(policy.policyId, policy.marketId);
-      console.log(adjustmentConfigurations);
+
       const loan: LoanRequest = {
         id: policy.policyId,
         amount: adjustmentConfigurations.length
@@ -34,12 +30,53 @@ const getUserLoanRequest = async (address: string) => {
             ? "pending"
             : "active",
       };
+
       loans.push(loan);
     })
   );
   return loans;
 };
 
-const getUserLoans = () => {};
+const getUserLoans = async (address: string) => {
+  const { payoutRequests, payouts } = await getUserPayouts(address);
+  let userLoans: {
+    payoutsRequests: LoanPayout[];
+    payouts: LoanPayout[];
+  } = { payoutsRequests: [], payouts: [] };
 
-export { getUserLoanRequest };
+  await Promise.all(
+    payoutRequests.map(async (pr) => {
+      const { markets } = await getMarketById(pr.marketId);
+
+      const request: LoanPayout = {
+        id: pr.id,
+        amount: pr.requestedAmount,
+        data: pr.data,
+        marketId: pr.marketId,
+        recipient: pr.recipient,
+        status: PayoutStatus[pr.status],
+        token: markets[0].capitalToken,
+      };
+      console.log(request);
+      userLoans.payoutsRequests.push(request);
+    })
+  );
+
+  payouts.map((payout) => {
+    const loan: LoanPayout = {
+      id: payout.id,
+      amount: payout.amount,
+      token: payout.capitalToken,
+      recipient: payout.recipient,
+      status: PayoutStatus[2], // Accepted
+      marketId: payout.marketId,
+      data: null,
+    };
+
+    userLoans.payouts.push(loan);
+  });
+
+  return userLoans;
+};
+
+export { getUserLoanRequest, getUserLoans };
