@@ -14,6 +14,8 @@ const SUBGRAPH_URL = process.env.SUBGRAPH_URL || "";
 
 const initClient = () => new GraphQLClient(SUBGRAPH_URL);
 
+const client = initClient();
+
 const getUserPolicies = (address: string): Promise<{ policies: Policy[] }> => {
   const query = `query {
         policies(
@@ -62,7 +64,6 @@ const getUserPolicies = (address: string): Promise<{ policies: Policy[] }> => {
         }
     }`;
 
-  const client = initClient();
   return client.request(query);
 };
 
@@ -94,7 +95,6 @@ const getPolicyAdjstmentsAndMarket = (
       }
     }`;
 
-  const client = initClient();
   return client.request(query);
 };
 
@@ -124,7 +124,6 @@ const getUserPayouts = (address: string): Promise<UserPayouts> => {
     }
   }`;
 
-  const client = initClient();
   return client.request(query);
 };
 
@@ -171,7 +170,6 @@ const getMarketById = (marketId: string): Promise<{ markets: Market[] }> => {
     }
   }`;
 
-  const client = initClient();
   return client.request(query);
 };
 

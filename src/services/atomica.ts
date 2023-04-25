@@ -57,7 +57,7 @@ const getUserLoans = async (address: string) => {
         status: PayoutStatus[pr.status],
         token: markets[0].capitalToken,
       };
-      console.log(request);
+
       userLoans.payoutsRequests.push(request);
     })
   );
