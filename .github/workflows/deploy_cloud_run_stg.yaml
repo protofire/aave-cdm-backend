@@ -1,0 +1,59 @@
+name: "[STG] - Build and Deploy AAVE CDM Backend to GCP Cloud Run"
+
+on:
+  push:
+    tags:
+      - 'stg-v*'
+    paths-ignore:
+      - '**.md'
+  #pull_request:
+  #  branches:
+  #    - 'main'
+  #  paths-ignore:
+  #    - '**.md'
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: aave-cdm
+  REGION: us-east1
+  GCR_REPO_NAME: aave-cdm-backend
+
+jobs:
+  Build_Push_Deploy:
+    name: Setup, Build, Push and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Authenticate with Google Cloud
+      - name: Configure GCP credentials
+        id: 'auth'
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # Setup gcloud CLI/SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Build and tag the docker image
+        run: |-
+          docker build . --tag gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME 
+
+      - name: Push the image to the Google Container Registry (GCR)
+        run: |-
+          docker push gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME
+     
+      - name: Deploy
+        run: |-
+          gcloud run deploy $GCR_REPO_NAME \
+          --region $REGION \
+          --image gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME \
+          --platform "managed" \
+          --allow-unauthenticated \
+          --min-instances 1 \
+          --quiet
