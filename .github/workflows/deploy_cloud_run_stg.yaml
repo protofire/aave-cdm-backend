@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'stg-v*'
+    branches:
+      - dev
     paths-ignore:
       - '**.md'
   #pull_request:
@@ -17,6 +19,12 @@ env:
   PROJECT_ID: aave-cdm
   REGION: us-east1
   GCR_REPO_NAME: aave-cdm-backend
+  MONGO_URL: mongodb://admin:password123@127.0.0.1:27017/aave-cdm
+  PORT: 3000
+  ATOMICA_URL: https://api.atomica.org/srm-staging/v1
+  DEPLOYMENT_ID: staging-goerli-v1
+  SUBGRAPH_URL: https://api.thegraph.com/subgraphs/name/atomica-dev/solvency-risk-markets-staging
+  ATOMICA_PRODUCT_ID: 6
 
 jobs:
   Build_Push_Deploy:
@@ -53,6 +61,7 @@ jobs:
           gcloud run deploy $GCR_REPO_NAME \
           --region $REGION \
           --image gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME \
+          --set-env-vars=[MONGO_URL=$MONGO_URL,ATOMICA_URL=$ATOMICA_URL,DEPLOYMENT_ID=$DEPLOYMENT_ID,SUBGRAPH_URL=$SUBGRAPH_URL,ATOMICA_PRODUCT_ID=$ATOMICA_PRODUCT_ID]
           --platform "managed" \
           --allow-unauthenticated \
           --min-instances 1 \
