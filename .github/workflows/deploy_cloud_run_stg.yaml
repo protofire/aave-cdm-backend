@@ -20,7 +20,6 @@ env:
   REGION: us-east1
   GCR_REPO_NAME: aave-cdm-backend
   MONGO_URL: ${{ secrets.MONGO_URL_STG }}
-  PORT: 3000
   ATOMICA_URL: https://api.atomica.org/srm-staging/v1
   DEPLOYMENT_ID: staging-goerli-v1
   SUBGRAPH_URL: https://api.thegraph.com/subgraphs/name/atomica-dev/solvency-risk-markets-staging
