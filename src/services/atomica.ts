@@ -1,7 +1,9 @@
 import { LoanPayout, LoanRequest, Policy } from "../helpers/types";
 import {
   getMarketById,
+  getMarketsByProduct,
   getPolicyAdjstmentsAndMarket,
+  getProduct,
   getUserPayouts,
   getUserPolicies,
 } from "../helpers/subgraph";
@@ -79,4 +81,14 @@ const getUserLoans = async (address: string) => {
   return userLoans;
 };
 
-export { getUserLoanRequest, getUserLoans };
+const listMarkets = async () => {
+  const { products } = await getProduct();
+  const { markets } = await getMarketsByProduct();
+
+  return {
+    product: products[0],
+    markets,
+  };
+};
+
+export { getUserLoanRequest, getUserLoans, listMarkets };

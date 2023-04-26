@@ -5,12 +5,14 @@ import {
   Market,
   Policy,
   PolicyAdjstmentsAndMarket,
+  Product,
   UserPayouts,
 } from "../helpers/types";
 
 dotenv.config();
 
 const SUBGRAPH_URL = process.env.SUBGRAPH_URL || "";
+const ATOMICA_PRODUCT_ID = process.env.ATOMICA_PRODUCT_ID || "";
 
 const initClient = () => new GraphQLClient(SUBGRAPH_URL);
 
@@ -173,9 +175,95 @@ const getMarketById = (marketId: string): Promise<{ markets: Market[] }> => {
   return client.request(query);
 };
 
+const getMarketsByProduct = (): Promise<{ markets: Market[] }> => {
+  const query = `query {
+    markets(where: {
+      productId: ${ATOMICA_PRODUCT_ID}
+    })
+    {
+      id
+      marketId
+      productId
+      riskPoolsControllerAddress
+      entityList
+      isEnabled
+      createdAt
+      title
+      marketFeeRecipient
+      details
+      wording
+      author
+      premiumToken
+      capitalToken
+      insuredToken
+      latestAccruedTimestamp
+      coverAdjusterOracle
+      rateOracle
+      waitingPeriod
+      marketOperatorIncentiveFee
+      policyBuyerAllowListId
+      policyBuyerAllowanceListId
+      status
+      premiumMulAccumulator
+      settlementDiscount
+      desiredCover
+      withdrawDelay
+      headAggregatedPoolId
+      tailCover
+      maxPremiumRatePerSec
+      bidStepPremiumRatePerSec
+      maxAggregatedPoolSlots
+      tailKink
+      tailJumpPremiumRatePerSec
+    }
+  }`;
+
+  return client.request(query);
+};
+
+const getProduct = (): Promise<{ products: Product[] }> => {
+  const query = `query {
+    products(where: {productId: ${ATOMICA_PRODUCT_ID}}) {
+      id
+      productId
+      riskPoolsControllerAddress
+      policyTokenIssuerAddress
+      treasuryAddress
+      payoutRequester
+      payoutApprover
+      productIncentiveFee
+      maxMarketIncentiveFee
+      title
+      wording
+      cashSettlementIsEnabled
+      physicalSettlementIsEnabled
+      feeToken
+      marketCreationFeeAmount
+      defaultPremiumToken
+      defaultCapitalToken
+      defaultCoverAdjusterOracle
+      claimProcessor
+      defaultRatesOracle
+      withdrawalDelay
+      withdrawRequestExpiration
+      marketCreatorsAllowlistId
+      waitingPeriod
+      operator
+      createdAt
+      createdBy
+      updatedAt
+      status
+    }
+  }`;
+
+  return client.request(query);
+};
+
 export {
   getPolicyAdjstmentsAndMarket,
   getUserPolicies,
   getUserPayouts,
   getMarketById,
+  getMarketsByProduct,
+  getProduct,
 };

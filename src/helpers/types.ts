@@ -136,6 +136,38 @@ type LoanPayout = {
   token: string;
 };
 
+type Product = {
+  id: string;
+  productId: string;
+  riskPoolsControllerAddress: string;
+  policyTokenIssuerAddress: string;
+  treasuryAddress: string;
+  payoutRequester: string;
+  payoutApprover: string;
+  productIncentiveFee: string;
+  maxMarketIncentiveFee: string;
+  title: string;
+  wording: string;
+  cashSettlementIsEnabled: boolean;
+  physicalSettlementIsEnabled: boolean;
+  feeToken: string;
+  marketCreationFeeAmount: string;
+  defaultPremiumToken: string;
+  defaultCapitalToken: string;
+  defaultCoverAdjusterOracle: string;
+  claimProcessor: string;
+  defaultRatesOracle: string;
+  withdrawalDelay: string;
+  withdrawRequestExpiration: string;
+  marketCreatorsAllowlistId: string;
+  waitingPeriod: string;
+  operator: string;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  status: number;
+};
+
 export {
   Policy,
   PolicyAdjstmentsAndMarket,
@@ -143,4 +175,5 @@ export {
   UserPayouts,
   Market,
   LoanPayout,
+  Product,
 };
