@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - 'stg-v*'
-    branches:
-      - dev
     paths-ignore:
       - '**.md'
   #pull_request:
