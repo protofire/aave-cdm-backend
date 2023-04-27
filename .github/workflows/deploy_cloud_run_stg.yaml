@@ -61,9 +61,8 @@ jobs:
           gcloud run deploy $GCR_REPO_NAME \
           --region $REGION \
           --image gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME \
-          --set-env-vars MONGO_URL=$MONGO_URL,ATOMICA_URL=$ATOMICA_URL,DEPLOYMENT_ID=$DEPLOYMENT_ID,SUBGRAPH_URL=$SUBGRAPH_URL,ATOMICA_PRODUCT_ID=$ATOMICA_PRODUCT_ID
+          --set-env-vars MONGO_URL=$MONGO_URL,ATOMICA_URL=$ATOMICA_URL,DEPLOYMENT_ID=$DEPLOYMENT_ID,SUBGRAPH_URL=$SUBGRAPH_URL,ATOMICA_PRODUCT_ID=$ATOMICA_PRODUCT_ID \
           --platform "managed" \
           --allow-unauthenticated \
           --min-instances 1 \
-          --port 3000
           --quiet
