@@ -9,41 +9,38 @@ import { PayoutStatus } from "../helpers/constants";
 
 const getUserLoanRequest = async (address: string) => {
   const { policies } = await getUserPolicies(address);
-  const loans: LoanRequest[] = [];
 
-  for (const policy of policies) {
-    const { adjustmentConfigurations, markets } =
-      await getPolicyAdjstmentsAndMarket(policy.policyId, policy.marketId);
+  const loans: LoanRequest[] = await Promise.all(
+    policies.map(async (policy: Policy) => {
+      const { adjustmentConfigurations, markets } =
+        await getPolicyAdjstmentsAndMarket(policy.policyId, policy.marketId);
 
-    const loan: LoanRequest = {
-      id: policy.policyId,
-      amount: adjustmentConfigurations.length
-        ? adjustmentConfigurations[0].maxCoverage
-        : policy.coverage,
-      asset: markets[0].premiumToken,
-      apy: adjustmentConfigurations.length
-        ? adjustmentConfigurations[0].maxRate
-        : "0",
-      status:
-        policy.expired && adjustmentConfigurations.length
-          ? "pending"
-          : "active",
-    };
+      const loan: LoanRequest = {
+        id: policy.policyId,
+        amount: adjustmentConfigurations.length
+          ? adjustmentConfigurations[0].maxCoverage
+          : policy.coverage,
+        asset: markets[0].premiumToken,
+        apy: adjustmentConfigurations.length
+          ? adjustmentConfigurations[0].maxRate
+          : "0",
+        status:
+          policy.expired && adjustmentConfigurations.length
+            ? "pending"
+            : "active",
+      };
 
-    loans.push(loan);
-  }
+      return loan;
+    })
+  );
 
   return loans;
 };
 
 const getUserLoans = async (address: string) => {
   const { payoutRequests, payouts } = await getUserPayouts(address);
-  let userLoans: {
-    payoutsRequests: LoanPayout[];
-    payouts: LoanPayout[];
-  } = { payoutsRequests: [], payouts: [] };
 
-  await Promise.all(
+  const loanPayoutRequests: LoanPayout[] = await Promise.all(
     payoutRequests.map(async (pr) => {
       const { markets } = await getMarketById(pr.marketId);
 
@@ -57,11 +54,11 @@ const getUserLoans = async (address: string) => {
         token: markets[0].capitalToken,
       };
 
-      userLoans.payoutsRequests.push(request);
+      return request;
     })
   );
 
-  payouts.map((payout) => {
+  const loanPayouts: LoanPayout[] = payouts.map((payout) => {
     const loan: LoanPayout = {
       id: payout.id,
       amount: payout.amount,
@@ -72,10 +69,10 @@ const getUserLoans = async (address: string) => {
       data: null,
     };
 
-    userLoans.payouts.push(loan);
+    return loan;
   });
 
-  return userLoans;
+  return { loanPayouts, loanPayoutRequests };
 };
 
 export { getUserLoanRequest, getUserLoans };
