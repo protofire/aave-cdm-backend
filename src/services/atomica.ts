@@ -11,29 +11,28 @@ const getUserLoanRequest = async (address: string) => {
   const { policies } = await getUserPolicies(address);
   const loans: LoanRequest[] = [];
 
-  await Promise.all(
-    policies.map(async (policy: Policy) => {
-      const { adjustmentConfigurations, markets } =
-        await getPolicyAdjstmentsAndMarket(policy.policyId, policy.marketId);
+  for (const policy of policies) {
+    const { adjustmentConfigurations, markets } =
+      await getPolicyAdjstmentsAndMarket(policy.policyId, policy.marketId);
 
-      const loan: LoanRequest = {
-        id: policy.policyId,
-        amount: adjustmentConfigurations.length
-          ? adjustmentConfigurations[0].maxCoverage
-          : policy.coverage,
-        asset: markets[0].premiumToken,
-        apy: adjustmentConfigurations.length
-          ? adjustmentConfigurations[0].maxRate
-          : "0",
-        status:
-          policy.expired && adjustmentConfigurations.length
-            ? "pending"
-            : "active",
-      };
+    const loan: LoanRequest = {
+      id: policy.policyId,
+      amount: adjustmentConfigurations.length
+        ? adjustmentConfigurations[0].maxCoverage
+        : policy.coverage,
+      asset: markets[0].premiumToken,
+      apy: adjustmentConfigurations.length
+        ? adjustmentConfigurations[0].maxRate
+        : "0",
+      status:
+        policy.expired && adjustmentConfigurations.length
+          ? "pending"
+          : "active",
+    };
 
-      loans.push(loan);
-    })
-  );
+    loans.push(loan);
+  }
+
   return loans;
 };
 
