@@ -168,6 +168,15 @@ type Product = {
   status: number;
 };
 
+type MarketQuote = {
+  id: string;
+  marketId: string;
+  capitalToken: string;
+  premiumToken: string;
+  apy: string;
+  quotePerSecond: string;
+};
+
 export {
   Policy,
   PolicyAdjstmentsAndMarket,
@@ -176,4 +185,5 @@ export {
   Market,
   LoanPayout,
   Product,
+  MarketQuote,
 };
