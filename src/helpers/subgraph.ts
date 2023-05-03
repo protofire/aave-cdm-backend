@@ -22,7 +22,7 @@ const getUserPolicies = (address: string): Promise<{ policies: Policy[] }> => {
   const query = `query {
         policies(
             where: {
-                owner: "${address}"
+                owner: "${address.toLocaleLowerCase()}"
             }
         ) {
             id
@@ -103,7 +103,7 @@ const getPolicyAdjstmentsAndMarket = (
 const getUserPayouts = (address: string): Promise<UserPayouts> => {
   const query = `query {
     payouts(where: {
-      recipient: "${address}"
+      recipient: "${address.toLocaleLowerCase()}"
     })
     {
       id,
@@ -113,7 +113,7 @@ const getUserPayouts = (address: string): Promise<UserPayouts> => {
       capitalToken,
     }
     payoutRequests(where: {
-      recipient: "${address}"
+      recipient: "${address.toLocaleLowerCase()}"
     })
     {
       id,

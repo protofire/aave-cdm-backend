@@ -9,7 +9,7 @@ import {
   getUserPayouts,
   getUserPolicies,
 } from "../helpers/subgraph";
-import { PayoutStatus } from "../helpers/constants";
+import { PayoutStatus, USDC_DECIMALS, USDC_SYMBOL } from "../helpers/constants";
 import { toNormalNumber } from "../helpers/utils";
 
 const ATOMICA_URL = process.env.ATOMICA_URL || "";
@@ -35,7 +35,9 @@ const getUserLoanRequest = async (address: string) => {
         amount: adjustmentConfigurations.length
           ? adjustmentConfigurations[0].maxCoverage
           : policy.coverage,
-        asset: markets[0].premiumToken,
+        tokenAddress: markets[0].premiumToken,
+        tokenDecimals: USDC_DECIMALS,
+        tokenSymbol: USDC_SYMBOL,
         apy: requestApy,
         status:
           policy.expired && adjustmentConfigurations.length
@@ -64,7 +66,9 @@ const getUserLoans = async (address: string) => {
         marketId: pr.marketId,
         recipient: pr.recipient,
         status: PayoutStatus[pr.status],
-        token: markets[0].capitalToken,
+        tokenAddress: markets[0].capitalToken,
+        tokenSymbol: USDC_SYMBOL,
+        tokenDecimals: USDC_DECIMALS,
       };
 
       return request;
@@ -75,11 +79,13 @@ const getUserLoans = async (address: string) => {
     const loan: LoanPayout = {
       id: payout.id,
       amount: payout.amount,
-      token: payout.capitalToken,
+      tokenAddress: payout.capitalToken,
       recipient: payout.recipient,
       status: PayoutStatus[2], // Accepted
       marketId: payout.marketId,
       data: null,
+      tokenSymbol: USDC_SYMBOL,
+      tokenDecimals: USDC_DECIMALS,
     };
 
     return loan;
