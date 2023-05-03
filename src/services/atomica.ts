@@ -1,19 +1,34 @@
-import { LoanPayout, LoanRequest, Policy } from "../helpers/types";
+import axios from "axios";
+
+import { LoanPayout, LoanRequest, MarketQuote, Policy } from "../helpers/types";
 import {
   getMarketById,
+  getMarketsByProduct,
   getPolicyAdjstmentsAndMarket,
+  getProduct,
   getUserPayouts,
   getUserPolicies,
 } from "../helpers/subgraph";
 import { PayoutStatus } from "../helpers/constants";
+import { toNormalNumber } from "../helpers/utils";
+
+const ATOMICA_URL = process.env.ATOMICA_URL || "";
 
 const getUserLoanRequest = async (address: string) => {
   const { policies } = await getUserPolicies(address);
 
   const loans: LoanRequest[] = await Promise.all(
     policies.map(async (policy: Policy) => {
+      let requestApy: string = "";
       const { adjustmentConfigurations, markets } =
         await getPolicyAdjstmentsAndMarket(policy.policyId, policy.marketId);
+
+      if (adjustmentConfigurations.length) {
+        requestApy = toNormalNumber(adjustmentConfigurations[0].maxRate, 16);
+      } else {
+        const { apy } = await getMarketQuote(policy.marketId);
+        requestApy = parseFloat(apy).toFixed(2).toString();
+      }
 
       const loan: LoanRequest = {
         id: policy.policyId,
@@ -21,9 +36,7 @@ const getUserLoanRequest = async (address: string) => {
           ? adjustmentConfigurations[0].maxCoverage
           : policy.coverage,
         asset: markets[0].premiumToken,
-        apy: adjustmentConfigurations.length
-          ? adjustmentConfigurations[0].maxRate
-          : "0",
+        apy: requestApy,
         status:
           policy.expired && adjustmentConfigurations.length
             ? "pending"
@@ -75,4 +88,21 @@ const getUserLoans = async (address: string) => {
   return { loanPayouts, loanPayoutRequests };
 };
 
-export { getUserLoanRequest, getUserLoans };
+const listMarkets = async () => {
+  const { products } = await getProduct();
+  const { markets } = await getMarketsByProduct();
+
+  return {
+    product: products[0],
+    markets,
+  };
+};
+
+const getMarketQuote = async (marketId: string): Promise<MarketQuote> => {
+  const { data } = await axios.get(
+    `${ATOMICA_URL}/deployments/any/products/any/markets/${marketId}/quote/`
+  );
+  return data[0].markets[0];
+};
+
+export { getUserLoanRequest, getUserLoans, listMarkets };
