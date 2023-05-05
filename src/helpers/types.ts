@@ -42,8 +42,10 @@ type LoanRequest = {
   id: string;
   amount: string;
   status: string;
-  asset: string;
+  tokenAddress: string;
   apy?: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
 };
 
 type PolicyAdjstmentsAndMarket = {
@@ -133,7 +135,9 @@ type LoanPayout = {
   amount: string;
   data: string | null;
   status: string;
-  token: string;
+  tokenAddress: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
 };
 
 type Product = {
